@@ -13,7 +13,11 @@ fn freeKeysAndDeinit(self: *std.StringHashMap(u32)) void {
 
 test "count one word" {
     const s = "word";
-    var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+
+    // var map = try countWords(testing.allocator, s);
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 1), map.count());
     try testing.expectEqual(@as(?u32, 1), map.get("word"));
     freeKeysAndDeinit(&map);
@@ -31,7 +35,10 @@ test "count one of each word" {
 
 test "multiple occurrences of a word" {
     const s = "one fish two fish red fish blue fish";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 5), map.count());
     try testing.expectEqual(@as(?u32, 1), map.get("one"));
     try testing.expectEqual(@as(?u32, 4), map.get("fish"));
@@ -75,7 +82,10 @@ test "ignore punctuation" {
 
 test "include numbers" {
     const s = "testing, 1, 2 testing";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 3), map.count());
     try testing.expectEqual(@as(?u32, 2), map.get("testing"));
     try testing.expectEqual(@as(?u32, 1), map.get("1"));
@@ -85,7 +95,10 @@ test "include numbers" {
 
 test "normalize case" {
     const s = "go Go GO Stop stop";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 2), map.count());
     try testing.expectEqual(@as(?u32, 3), map.get("go"));
     try testing.expectEqual(@as(?u32, 2), map.get("stop"));
@@ -94,7 +107,10 @@ test "normalize case" {
 
 test "with apostrophes" {
     const s = "'First: don't laugh. Then: don't cry. You're getting it.'";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 8), map.count());
     try testing.expectEqual(@as(?u32, 1), map.get("first"));
     try testing.expectEqual(@as(?u32, 2), map.get("don't"));
@@ -109,7 +125,10 @@ test "with apostrophes" {
 
 test "with quotations" {
     const s = "Joe can't tell between 'large' and large.";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 6), map.count());
     try testing.expectEqual(@as(?u32, 1), map.get("joe"));
     try testing.expectEqual(@as(?u32, 1), map.get("can't"));
@@ -156,7 +175,10 @@ test "alternating word separators not detected as a word" {
 
 test "quotation for word with apostrophe" {
     const s = "can, can't, 'can't'";
-    var map = try countWords(testing.allocator, s);
+    // var map = try countWords(testing.allocator, s);
+    var general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    const gpa = general_purpose_allocator.allocator();
+    var map = try countWords(gpa, s);
     try testing.expectEqual(@as(u32, 2), map.count());
     try testing.expectEqual(@as(?u32, 1), map.get("can"));
     try testing.expectEqual(@as(?u32, 2), map.get("can't"));
